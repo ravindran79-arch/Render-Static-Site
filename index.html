@@ -1,29 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compliance Checker</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>AI Compliance Checker</h1>
-    <form id="complianceForm">
-      <div class="file-inputs">
-        <label for="rfq">Upload RFQ (TXT or PDF):</label>
-        <input type="file" id="rfq" name="rfq" accept=".txt,.pdf" required>
+  <h1>Compliance Checker</h1>
 
-        <label for="proposal">Upload Proposal (TXT or PDF):</label>
-        <input type="file" id="proposal" name="proposal" accept=".txt,.pdf" required>
-      </div>
+  <form id="upload-form">
+    <label for="file-input">Upload RFQ and Proposal files (PDF or DOCX):</label><br />
+    <input type="file" id="file-input" multiple accept=".pdf,.docx" /><br /><br />
+    <button type="button" id="check-btn">Check Compliance</button>
+  </form>
 
-      <button type="submit">Run Compliance Check</button>
-    </form>
-
-    <div id="status" class="status"></div>
-    <pre id="result" class="result"></pre>
-  </div>
+  <div id="results"></div>
 
   <script src="script.js"></script>
 </body>
