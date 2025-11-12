@@ -1,56 +1,56 @@
-// ---------------- script.js ----------------
+// script.js
 
-// Wait until DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("complianceForm");
-  const resultDiv = document.getElementById("result");
-  const submitBtn = document.getElementById("submitBtn");
+  const rfqInput = document.getElementById("rfqFile");
+  const proposalInput = document.getElementById("proposalFile");
+  const output = document.getElementById("analysisOutput");
 
-  if (!form) {
-    console.error("Form not found in the DOM");
+  if (!form || !rfqInput || !proposalInput || !output) {
+    console.error("❌ One or more required DOM elements are missing");
     return;
   }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    resultDiv.innerHTML = "";
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Processing files and running AI comparison... This may take up to 30 seconds...";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    output.textContent = "Processing files and running AI comparison...";
 
     try {
-      const rfqFile = document.getElementById("rfq").files[0];
-      const proposalFile = document.getElementById("proposal").files[0];
+      // Read RFQ file
+      const rfqFile = rfqInput.files[0];
+      const proposalFile = proposalInput.files[0];
 
       if (!rfqFile || !proposalFile) {
-        throw new Error("Please upload both RFQ and Proposal files");
+        output.textContent = "Please upload both RFQ and Proposal files.";
+        return;
       }
 
-      const formData = new FormData();
-      formData.append("rfq", rfqFile);
-      formData.append("proposal", proposalFile);
+      const rfqText = await rfqFile.text();
+      const proposalText = await proposalFile.text();
 
-      const response = await fetch("https://compliance-backend-fxxb.onrender.com/compliance-check", {
-        method: "POST",
-        body: formData,
-      });
+      // Call backend compliance-check endpoint
+      const response = await fetch(
+        "https://compliance-backend-fxxb.onrender.com/compliance-check",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rfqText, proposalText }),
+        }
+      );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
+        );
       }
 
       const data = await response.json();
-      if (!data || !data.analysis) {
-        throw new Error("Backend returned invalid response");
-      }
-
-      resultDiv.innerHTML = `<pre>${data.analysis}</pre>`;
+      output.textContent = data.analysis || "No analysis returned.";
     } catch (err) {
       console.error("Backend Error:", err);
-      resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Check Compliance";
+      output.textContent = `Backend Error: ${err.message}`;
     }
   });
 });
