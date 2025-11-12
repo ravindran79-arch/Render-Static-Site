@@ -1,35 +1,37 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('compliance-form');
-  const status = document.getElementById('status');
-  const result = document.getElementById('result');
+// ---------------- script.js ----------------
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Wait until DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("complianceForm");
+  const resultDiv = document.getElementById("result");
+  const submitBtn = document.getElementById("submitBtn");
 
-    const rfqFile = document.getElementById('rfq-file').files[0];
-    const proposalFile = document.getElementById('proposal-file').files[0];
+  if (!form) {
+    console.error("Form not found in the DOM");
+    return;
+  }
 
-    if (!rfqFile || !proposalFile) {
-      alert('Please select both RFQ and Proposal files.');
-      return;
-    }
-
-    const rfqText = await rfqFile.text();
-    const proposalText = await proposalFile.text();
-
-    status.textContent = 'Processing files and running AI compliance analysis... This may take up to 30 seconds.';
-    result.textContent = '';
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    resultDiv.innerHTML = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing files and running AI comparison... This may take up to 30 seconds...";
 
     try {
-      const response = await fetch('https://compliance-backend-fxxb.onrender.com/compliance-check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          rfqText,
-          proposalText
-        })
+      const rfqFile = document.getElementById("rfq").files[0];
+      const proposalFile = document.getElementById("proposal").files[0];
+
+      if (!rfqFile || !proposalFile) {
+        throw new Error("Please upload both RFQ and Proposal files");
+      }
+
+      const formData = new FormData();
+      formData.append("rfq", rfqFile);
+      formData.append("proposal", proposalFile);
+
+      const response = await fetch("https://compliance-backend-fxxb.onrender.com/compliance-check", {
+        method: "POST",
+        body: formData,
       });
 
       if (!response.ok) {
@@ -38,12 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const data = await response.json();
-      status.textContent = 'Compliance check complete.';
-      result.textContent = JSON.stringify(data, null, 2);
+      if (!data || !data.analysis) {
+        throw new Error("Backend returned invalid response");
+      }
+
+      resultDiv.innerHTML = `<pre>${data.analysis}</pre>`;
     } catch (err) {
-      status.textContent = 'Error during compliance check.';
-      result.textContent = `Backend Error: ${err.message}`;
-      console.error(err);
+      console.error("Backend Error:", err);
+      resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Check Compliance";
     }
   });
 });
