@@ -3,22 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Compliance Checker</title>
+  <title>Compliance Checker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>AI Compliance Checker</h1>
-    <form id="compliance-form">
-      <label for="rfq-file">Upload RFQ:</label>
-      <input type="file" id="rfq-file" accept=".txt" required>
-      <label for="proposal-file">Upload Proposal:</label>
-      <input type="file" id="proposal-file" accept=".txt" required>
-      <button type="submit">Check Compliance</button>
+    <form id="complianceForm">
+      <div class="file-inputs">
+        <label for="rfq">Upload RFQ (TXT or PDF):</label>
+        <input type="file" id="rfq" name="rfq" accept=".txt,.pdf" required>
+
+        <label for="proposal">Upload Proposal (TXT or PDF):</label>
+        <input type="file" id="proposal" name="proposal" accept=".txt,.pdf" required>
+      </div>
+
+      <button type="submit">Run Compliance Check</button>
     </form>
-    <div id="status"></div>
-    <pre id="result"></pre>
+
+    <div id="status" class="status"></div>
+    <pre id="result" class="result"></pre>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
