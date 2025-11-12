@@ -1,39 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Compliance Checker</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>AI Compliance Checker</h1>
-    <p>Upload your <strong>RFQ</strong> and <strong>Proposal</strong> documents below to analyze compliance.</p>
-
-    <form id="uploadForm">
-      <div class="file-group">
-        <label for="rfqFile">📄 RFQ Document:</label>
-        <input type="file" id="rfqFile" accept=".txt,.pdf,.docx" required />
-      </div>
-
-      <div class="file-group">
-        <label for="proposalFile">📄 Proposal Document:</label>
-        <input type="file" id="proposalFile" accept=".txt,.pdf,.docx" required />
-      </div>
-
-      <button type="submit" id="analyzeButton">🔍 Run Compliance Check</button>
+    <form id="compliance-form">
+      <label for="rfq-file">Upload RFQ:</label>
+      <input type="file" id="rfq-file" accept=".txt" required>
+      <label for="proposal-file">Upload Proposal:</label>
+      <input type="file" id="proposal-file" accept=".txt" required>
+      <button type="submit">Check Compliance</button>
     </form>
-
-    <div id="loading" class="loading">Processing files and running AI comparison... This may take up to 30 seconds.</div>
-
-    <div id="result" class="result"></div>
+    <div id="status"></div>
+    <pre id="result"></pre>
   </div>
-
-  <footer>
-    <p>Powered by <strong>Gemini AI</strong> — Render Deployment</p>
-  </footer>
-
   <script src="script.js"></script>
 </body>
 </html>
