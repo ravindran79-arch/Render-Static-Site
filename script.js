@@ -1,61 +1,66 @@
-// ----------------------------
-// script.js — Compliance Checker Frontend
-// ----------------------------
+// ---------------- script.js (updated for JSON text upload) ----------------
 
-// When the DOM loads
-document.addEventListener("DOMContentLoaded", () => {
-  const uploadForm = document.getElementById("uploadForm");
-  const resultDiv = document.getElementById("result");
-  const loadingDiv = document.getElementById("loading");
+document.getElementById('checkComplianceButton').addEventListener('click', async () => {
+    const rfqInput = document.getElementById('rfqFile');
+    const proposalInput = document.getElementById('proposalFile');
+    const status = document.getElementById('status');
+    const resultArea = document.getElementById('resultArea');
+    const button = document.getElementById('checkComplianceButton');
 
-  uploadForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const rfqFile = document.getElementById("rfqFile").files[0];
-    const proposalFile = document.getElementById("proposalFile").files[0];
-
-    if (!rfqFile || !proposalFile) {
-      alert("⚠️ Please upload both RFQ and Proposal files.");
-      return;
+    // Check for file selection
+    if (rfqInput.files.length === 0 || proposalInput.files.length === 0) {
+        status.textContent = "Error: Please select both the RFQ and Proposal files.";
+        return;
     }
 
-    const formData = new FormData();
-    formData.append("files", rfqFile);
-    formData.append("files", proposalFile);
+    // Update UI to show loading
+    status.textContent = "Processing files and running AI comparison... This may take up to 30 seconds.";
+    resultArea.textContent = "Loading...";
+    button.disabled = true; 
+    button.style.backgroundColor = '#6c757d';
 
-    // Show loading
-    loadingDiv.style.display = "block";
-    resultDiv.innerText = "Processing files and running AI comparison... This may take up to 30 seconds.";
+    // Helper function to read file as text
+    function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        });
+    }
 
     try {
-      // Backend API endpoint
-      const response = await fetch("https://compliance-backend-fxxb.onrender.com/compliance-check", {
-        method: "POST",
-        body: formData,
-      });
+        // Read files as text
+        const rfqText = await readFileAsText(rfqInput.files[0]);
+        const proposalText = await readFileAsText(proposalInput.files[0]);
 
-      if (!response.ok) {
-        // Try to read the response body for debugging
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
+        // Prepare JSON payload
+        const payload = { rfqText, proposalText };
 
-      // Expect JSON result from backend
-      const data = await response.json();
+        // Send request to backend
+        const response = await fetch("https://compliance-backend-fxxb.onrender.com/compliance-check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
+        const data = await response.json();
 
-      // Show AI analysis result
-      resultDiv.innerText = data.result || "No compliance findings were returned.";
+        if (response.ok && data.success) {
+            status.textContent = "Compliance check complete!";
+            resultArea.innerHTML = marked.parse(data.result);
+        } else {
+            status.textContent = "Compliance Check Failed.";
+            resultArea.textContent = `Error: ${data.error || "An unknown server error occurred."}`;
+            console.error("Backend Error:", data.error);
+        }
 
-    } catch (err) {
-      console.error("Backend Error:", err);
-      resultDiv.innerText = "❌ Error processing compliance check:\n" + err.message;
+    } catch (e) {
+        status.textContent = "Error: Failed to connect to the backend server.";
+        resultArea.textContent = "There was a network error. Check your server URL and CORS settings.";
+        console.error("Network Fetch Error:", e);
     } finally {
-      // Hide loading spinner or message
-      loadingDiv.style.display = "none";
+        button.disabled = false;
+        button.style.backgroundColor = '#28a745';
     }
-  });
 });
