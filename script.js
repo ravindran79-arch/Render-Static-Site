@@ -1,56 +1,56 @@
 // script.js
+console.log("🚀 Frontend script loaded");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("complianceForm");
-  const rfqInput = document.getElementById("rfqFile");
-  const proposalInput = document.getElementById("proposalFile");
-  const output = document.getElementById("analysisOutput");
+const form = document.getElementById("upload-form");
+const fileInput = document.getElementById("file-input");
+const checkBtn = document.getElementById("check-btn");
+const resultsDiv = document.getElementById("results");
 
-  if (!form || !rfqInput || !proposalInput || !output) {
-    console.error("❌ One or more required DOM elements are missing");
-    return;
-  }
+// Validate essential DOM elements
+if (!form || !fileInput || !checkBtn || !resultsDiv) {
+  console.error("❌ One or more required DOM elements are missing");
+} else {
+  console.log("✅ All required DOM elements found");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  checkBtn.addEventListener("click", async () => {
+    const files = fileInput.files;
+    if (!files || files.length === 0) {
+      alert("Please upload at least one file to analyze.");
+      return;
+    }
 
-    output.textContent = "Processing files and running AI comparison...";
+    resultsDiv.innerHTML = "<p>⏳ Uploading and analyzing files...</p>";
+
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append("files", file);
+    }
 
     try {
-      // Read RFQ file
-      const rfqFile = rfqInput.files[0];
-      const proposalFile = proposalInput.files[0];
-
-      if (!rfqFile || !proposalFile) {
-        output.textContent = "Please upload both RFQ and Proposal files.";
-        return;
-      }
-
-      const rfqText = await rfqFile.text();
-      const proposalText = await proposalFile.text();
-
-      // Call backend compliance-check endpoint
-      const response = await fetch(
-        "https://compliance-backend-fxxb.onrender.com/compliance-check",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rfqText, proposalText }),
-        }
-      );
+      const response = await fetch("/analyze", {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          `HTTP ${response.status}: ${JSON.stringify(errorData)}`
-        );
+        const errText = await response.text();
+        throw new Error(`Server error: ${response.status} – ${errText}`);
       }
 
       const data = await response.json();
-      output.textContent = data.analysis || "No analysis returned.";
+      console.log("✅ Analysis result:", data);
+
+      if (data.error) {
+        resultsDiv.innerHTML = `<p style="color:red;">⚠️ Error: ${data.error}</p>`;
+      } else {
+        resultsDiv.innerHTML = `
+          <h2>Compliance Results</h2>
+          <pre>${data.analysis}</pre>
+        `;
+      }
     } catch (err) {
-      console.error("Backend Error:", err);
-      output.textContent = `Backend Error: ${err.message}`;
+      console.error("❌ Error during analysis:", err);
+      resultsDiv.innerHTML = `<p style="color:red;">❌ ${err.message}</p>`;
     }
   });
-});
+}
