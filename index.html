@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Compliance Checker 🤖</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Document Compliance Checker 🤖</h2>
+    <p>Upload your RFQ and Proposal files (PDF, DOCX, or TXT) for an AI compliance score and improvement plan.</p>
+    
+    <label for="rfqFile">1. Upload RFQ Document:</label>
+    <div id="rfqDropZone" class="dropzone">
+        Drag & Drop RFQ file here or click to select
+        <input type="file" id="rfqFile" accept=".pdf,.docx,.doc,.txt" style="display:none">
+    </div>
+
+    <label for="proposalFile">2. Upload Proposal Document:</label>
+    <div id="proposalDropZone" class="dropzone">
+        Drag & Drop Proposal file here or click to select
+        <input type="file" id="proposalFile" accept=".pdf,.docx,.doc,.txt" style="display:none">
+    </div>
+
+    <button id="checkComplianceButton">Check Compliance</button>
+
+    <p id="status" style="margin-top: 20px; color: orange; font-weight: bold;">Ready to check compliance...</p>
+
+    <div id="spinner">
+        <svg width="40" height="40" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" stroke="#28a745" stroke-width="5" fill="none" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
+            </circle>
+        </svg>
+    </div>
+
+    <div id="resultArea">
+        Your detailed compliance report will appear here.
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

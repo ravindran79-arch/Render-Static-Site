@@ -1,0 +1,8 @@
+body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
+.container { border: 1px solid #007bff; padding: 25px; border-radius: 8px; max-width: 600px; margin: auto; background: #fff; }
+label { display: block; margin-top: 15px; font-weight: bold; }
+.dropzone { border: 2px dashed #007bff; padding: 20px; border-radius: 6px; text-align: center; cursor: pointer; }
+button { padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-weight: bold; transition: background-color 0.3s; }
+button:disabled { background-color: #6c757d; cursor: not-allowed; }
+#resultArea { margin-top: 15px; padding: 15px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; min-height: 100px; white-space: pre-wrap; }
+#spinner { display:none; text-align: center; margin-top: 15px; }
