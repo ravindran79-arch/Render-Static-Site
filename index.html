@@ -5,27 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Compliance Checker</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Document Compliance Checker 🤖</h2>
-        <p>Upload your RFQ and Proposal files (PDF, DOCX, or TXT) for an AI compliance score and improvement plan.</p>
-        
-        <label for="rfqFile">1. Upload RFQ Document:</label>
-        <input type="file" id="rfqFile" accept=".pdf,.docx,.doc,.txt">
+<div class="container">
+    <h2>Document Compliance Checker 🤖</h2>
+    <p>Upload your RFQ and Proposal files (PDF, DOCX, or TXT) for an AI compliance score and improvement plan.</p>
 
-        <label for="proposalFile">2. Upload Proposal Document:</label>
-        <input type="file" id="proposalFile" accept=".pdf,.docx,.doc,.txt">
+    <label for="rfqFile">1. Upload RFQ Document:</label>
+    <input type="file" id="rfqFile" accept=".pdf,.docx,.doc,.txt">
 
-        <button id="checkComplianceButton">Check Compliance</button>
-        
-        <p id="status">Ready to check compliance...</p>
-        <div id="resultArea">
-            Your detailed compliance report will appear here.
-        </div>
-    </div>
+    <label for="proposalFile">2. Upload Proposal Document:</label>
+    <input type="file" id="proposalFile" accept=".pdf,.docx,.doc,.txt">
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="script.js"></script>
+    <button id="checkComplianceButton">Check Compliance</button>
+
+    <p id="status">Ready to check compliance...</p>
+    <div id="resultArea">Your detailed compliance report will appear here.</div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
