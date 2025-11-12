@@ -19,7 +19,7 @@ document.getElementById('checkComplianceButton').addEventListener('click', async
     formData.append('rfq', rfqInput.files[0]);
     formData.append('proposal', proposalInput.files[0]);
 
-    const BACKEND_URL = "https://compliance-backend-fxxb.onrender.com/generate"; // ✅ Live backend URL
+    const BACKEND_URL = "https://compliance-backend-fxxb.onrender.com/compliance-check"; // ✅ Live backend endpoint
 
     try {
         const response = await fetch(BACKEND_URL, {
@@ -29,9 +29,9 @@ document.getElementById('checkComplianceButton').addEventListener('click', async
 
         const data = await response.json();
 
-        if (response.ok) {
+        if (response.ok && data.success) {
             status.textContent = "Compliance check complete!";
-            resultArea.innerHTML = marked.parse(data.text || "No result returned");
+            resultArea.innerHTML = marked.parse(data.result || "No result returned");
         } else {
             status.textContent = "Compliance Check Failed.";
             resultArea.textContent = `Error: ${data.error || "Unknown server error"}`;
