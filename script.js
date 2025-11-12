@@ -12,14 +12,13 @@ document.getElementById('checkComplianceButton').addEventListener('click', async
 
     status.textContent = "Processing files and running AI comparison... This may take up to 30 seconds.";
     resultArea.textContent = "Loading...";
-    button.disabled = true; 
-    button.style.backgroundColor = '#6c757d';
+    button.disabled = true;
 
     const formData = new FormData();
     formData.append('rfq', rfqInput.files[0]);
     formData.append('proposal', proposalInput.files[0]);
 
-    const BACKEND_URL = "https://compliance-backend-fxxb.onrender.com/compliance-check"; // ✅ Live backend endpoint
+    const BACKEND_URL = "https://compliance-backend-fxxb.onrender.com/compliance-check";
 
     try {
         const response = await fetch(BACKEND_URL, {
