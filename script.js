@@ -1,48 +1,61 @@
-document.getElementById('checkComplianceButton').addEventListener('click', async () => {
-    const rfqInput = document.getElementById('rfqFile');
-    const proposalInput = document.getElementById('proposalFile');
-    const status = document.getElementById('status');
-    const resultArea = document.getElementById('resultArea');
-    const button = document.getElementById('checkComplianceButton');
+// ----------------------------
+// script.js — Compliance Checker Frontend
+// ----------------------------
 
-    if (rfqInput.files.length === 0 || proposalInput.files.length === 0) {
-        status.textContent = "Error: Please select both the RFQ and Proposal files.";
-        return;
+// When the DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadForm = document.getElementById("uploadForm");
+  const resultDiv = document.getElementById("result");
+  const loadingDiv = document.getElementById("loading");
+
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const rfqFile = document.getElementById("rfqFile").files[0];
+    const proposalFile = document.getElementById("proposalFile").files[0];
+
+    if (!rfqFile || !proposalFile) {
+      alert("⚠️ Please upload both RFQ and Proposal files.");
+      return;
     }
-
-    status.textContent = "Processing files and running AI comparison... This may take up to 30 seconds.";
-    resultArea.textContent = "Loading...";
-    button.disabled = true;
 
     const formData = new FormData();
-    formData.append('rfq', rfqInput.files[0]);
-    formData.append('proposal', proposalInput.files[0]);
+    formData.append("files", rfqFile);
+    formData.append("files", proposalFile);
 
-    const BACKEND_URL = "https://compliance-backend-fxxb.onrender.com/compliance-check";
+    // Show loading
+    loadingDiv.style.display = "block";
+    resultDiv.innerText = "Processing files and running AI comparison... This may take up to 30 seconds.";
 
     try {
-        const response = await fetch(BACKEND_URL, {
-            method: 'POST',
-            body: formData
-        });
+      // Backend API endpoint
+      const response = await fetch("https://compliance-backend-fxxb.onrender.com/compliance-check", {
+        method: "POST",
+        body: formData,
+      });
 
-        const data = await response.json();
+      if (!response.ok) {
+        // Try to read the response body for debugging
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
-        if (response.ok && data.success) {
-            status.textContent = "Compliance check complete!";
-            resultArea.innerHTML = marked.parse(data.result || "No result returned");
-        } else {
-            status.textContent = "Compliance Check Failed.";
-            resultArea.textContent = `Error: ${data.error || "Unknown server error"}`;
-            console.error("Backend Error:", data.error);
-        }
+      // Expect JSON result from backend
+      const data = await response.json();
 
-    } catch (e) {
-        status.textContent = "Error: Failed to connect to the backend server.";
-        resultArea.textContent = "Network error. Check your backend URL and CORS settings.";
-        console.error("Network Fetch Error:", e);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Show AI analysis result
+      resultDiv.innerText = data.result || "No compliance findings were returned.";
+
+    } catch (err) {
+      console.error("Backend Error:", err);
+      resultDiv.innerText = "❌ Error processing compliance check:\n" + err.message;
     } finally {
-        button.disabled = false;
-        button.style.backgroundColor = '#28a745';
+      // Hide loading spinner or message
+      loadingDiv.style.display = "none";
     }
+  });
 });
